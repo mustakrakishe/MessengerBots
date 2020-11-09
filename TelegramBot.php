@@ -1,11 +1,8 @@
 <?php
     class TelegramBot{
-        protected $TOKEN;
-        protected $API_URL;
 
         public function __construct($token, $api_url = 'https://api.telegram.org'){
-            $this->TOKEN = $token;
-            $this->API_URL = $api_url;
+            parent::__construct($token, $api_url);
         }
 
         public function sendRequest($method, $data){
