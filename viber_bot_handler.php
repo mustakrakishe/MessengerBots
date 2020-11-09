@@ -1,4 +1,38 @@
-<?php 
+<?php
+
+class ViberBot{
+	protected $TOKEN;
+	protected $API_URL;
+	protected $updates;
+
+	public function __construct($token, $api_url = 'https://chatapi.viber.com/pa'){
+		$this->TOKEN = $token;
+		$this->API_URL = $api_url;
+	}
+
+	public function sendRequest($method, $data){
+		$url_pieces = [
+			$this->API_URL,
+			'bot' . $this->TOKEN,
+			$method
+		];
+		$url = implode('/', $url_pieces);
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		$res = curl_exec($ch);
+		
+		if(curl_error($ch)){
+			return curl_error($ch);
+		}
+		else{
+			return json_decode($res);
+		}
+
+	}
+}
 
 $auth_token = "4c5a597f8c800cae-4410e4c693d5a4c3-882bb189d75f8e34";
 $send_name = "mustaBot";
