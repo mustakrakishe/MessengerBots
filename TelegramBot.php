@@ -1,29 +1,17 @@
 <?php
-    class TelegramBot{
-
+include_once('MessengerBot.php');
+    class TelegramBot extends MessengerBot{
         public function __construct($token, $api_url = 'https://api.telegram.org'){
             parent::__construct($token, $api_url);
         }
 
-        public function sendRequest($method, $data){
+        protected function buildRequestUrl($method){
             $url_pieces = [
                 $this->API_URL,
                 'bot' . $this->TOKEN,
                 $method
             ];
-            $url = implode('/', $url_pieces);
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            $res = curl_exec($ch);
-            
-            if(curl_error($ch)){
-                return curl_error($ch);
-            }
-            else{
-                return json_decode($res);
-            }
+            return implode('/', $url_pieces);
         }
 
         public function sendMessage($chatId, $message){
