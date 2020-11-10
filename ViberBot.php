@@ -8,5 +8,27 @@
         public function sendRequest($method, $data){
             parent::sendRequest($method, json_encode($data));
         }
+
+        public function sendMessage($receiver, $message){
+            $method = 'send_message';
+            $data = $message;
+            $data['receiver'] = $receiver;
+            
+            $this->sendRequest($method, $data);
+        }
+
+        public function sendText($receiver, $text, $senderName = 'MustaBot'){
+            $message = [
+                'auth_token' => $this->TOKEN,
+                'text' => $text,
+                'type' => 'text',
+                'sender' => [
+                    'name' => $senderName
+                ]
+            ];
+            $this->sendMessage($receiver, $message);
+        }
     }
+
+    
 ?>
