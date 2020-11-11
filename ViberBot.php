@@ -16,35 +16,46 @@
                     'receiverKey' => 'receiver'
                 ]
             ];
+            $this->name = $this->getAccountInfo()->name;
         }
 
         public function setName($name){
-            if(strlen($name) <= $this->senderNameMaxLength){
+            if($this->senderNameValidation($name)){
                 $this->name = $name;
             }
             
             return $this->name;
         }
 
+        protected function senderNameValidation($name){
+            return is_string($name) && strlen($name) <= $this->senderNameMaxLength;
+        }
+
         public function getName($name){
             return $this->name;
         }
 
-        public function sendRequest($method, $options){
+        public function sendRequest($method, $options = []){
             $options[CURLOPT_HTTPHEADER] = ['X-Viber-Auth-Token: ' . $this->TOKEN];
-            $options[CURLOPT_POSTFIELDS] = json_encode($options[CURLOPT_POSTFIELDS]);
-            parent::sendRequest($method, $options);
+            if(isset($options[CURLOPT_POSTFIELDS])){
+                $options[CURLOPT_POSTFIELDS] = json_encode($options[CURLOPT_POSTFIELDS]);
+            }
+            return parent::sendRequest($method, $options);
         }
 
-        public function sendMessage($receiver, $message){
-            if(!isset($message['sender']['name'])){
-                $message['sender']['name'] = $this-name;
+        protected function sendMessage($receiver, $message){
+            if(empty($message['sender']['name'])){
+                if($this->senderNameValidation($this->name)){
+                    $message['sender']['name'] = $this->name;
+                }
             }
             parent::sendMessage($receiver, $message);
         }
 
-        public function sendText($receiver, $text, $senderName = 'MustaBot'){
-            $message['sender']['name'] = $senderName;
+        public function sendText($receiver, $text, $senderName = null){
+            if($this->senderNameValidation($senderName)){
+                $message['sender']['name'] = $senderName;
+            }
             $message['text'] = $text;
             $message['type'] = 'text';
             $this->sendMessage($receiver, $message, $senderName);
@@ -53,7 +64,7 @@
         public function getAccountInfo(){
             $method = $this->KEY_WORDS['methodNames']['getAccountInfo'];
             return $this->sendRequest($method);
-        }
+        }    
     }
 
     
