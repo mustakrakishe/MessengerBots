@@ -3,6 +3,15 @@ include_once('MessengerBot.php');
     class TelegramBot extends MessengerBot{
         public function __construct($token, $api_url = 'https://api.telegram.org'){
             parent::__construct($token, $api_url);
+            $this->KEY_WORDS = [
+                'methodNames' => [
+                    'sendMessage' => 'sendmessage'
+                ],
+
+                'requestDataKeys' => [
+                    'receiverKey' => 'chat_id'
+                ]
+            ];
         }
 
         protected function buildRequestUrl($method){
@@ -12,19 +21,6 @@ include_once('MessengerBot.php');
                 $method
             ];
             return implode('/', $url_pieces);
-        }
-
-        public function sendMessage($chatId, $message){
-            $method = 'sendmessage';
-            $data = $message;
-            $data['chat_id'] = $chatId;
-            
-            $this->sendRequest($method, $data);
-        }
-
-        public function sendText($chatId, $text){
-            $message['text'] = $text;
-            $this->sendMessage($chatId, $message);
         }
     }
 
