@@ -16,7 +16,6 @@
                     'receiverKey' => 'receiver'
                 ]
             ];
-            $this->name = $this->getAccountInfo()->name;
         }
 
         public function setName($name){
@@ -60,6 +59,4 @@
             return $this->sendRequest($method);
         }    
     }
-
-    
 ?>

@@ -1,5 +1,5 @@
 <?php
-include_once('MessengerBot.php');
+    include_once('MessengerBot.php');
     class TelegramBot extends MessengerBot{
         public function __construct($token, $api_url = 'https://api.telegram.org'){
             parent::__construct($token, $api_url);
@@ -23,6 +23,4 @@ include_once('MessengerBot.php');
             return implode('/', $url_pieces);
         }
     }
-
-
 ?>
