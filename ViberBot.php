@@ -44,21 +44,15 @@
         }
 
         protected function sendMessage($receiver, $message){
-            if(empty($message['sender']['name'])){
-                if($this->senderNameValidation($this->name)){
-                    $message['sender']['name'] = $this->name;
-                }
+            if($this->senderNameValidation($this->name)){
+                $message['sender']['name'] = $this->name;
             }
             parent::sendMessage($receiver, $message);
         }
 
-        public function sendText($receiver, $text, $senderName = null){
-            if($this->senderNameValidation($senderName)){
-                $message['sender']['name'] = $senderName;
-            }
-            $message['text'] = $text;
+        protected function makeTextMessage($text, $message = null){
             $message['type'] = 'text';
-            $this->sendMessage($receiver, $message, $senderName);
+            return parent::makeTextMessage($text, $message);
         }
 
         public function getAccountInfo(){
