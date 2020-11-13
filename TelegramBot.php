@@ -3,13 +3,12 @@
     class TelegramBot extends MessengerBot{
         public function __construct($token, $api_url = 'https://api.telegram.org'){
             parent::__construct($token, $api_url);
-            $this->KEY_WORDS = [
-                'methodNames' => [
-                    'sendMessage' => 'sendmessage'
-                ],
-
-                'requestDataKeys' => [
-                    'receiverKey' => 'chat_id'
+            $this->METHOD_PARAMETER_NAMES = [
+                'sendMessage' => [
+                    'methodName' => 'sendmessage',
+                    'receiver' => 'chat_id',
+                    'image' => 'photo',
+                    'imageDescription' => 'caption'
                 ]
             ];
         }

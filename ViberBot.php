@@ -6,14 +6,16 @@
 
         public function __construct($token, $api_url = 'https://chatapi.viber.com/pa'){
             parent::__construct($token, $api_url);
-            $this->KEY_WORDS = [
-                'methodNames' => [
-                    'sendMessage' => 'send_message',
-                    'getAccountInfo' => 'get_account_info'
+            $this->METHOD_PARAMETER_NAMES = [
+                'sendMessage' => [
+                    'methodName' => 'send_message',
+                    'receiver' => 'receiver',
+                    'image' => 'media',
+                    'imageDescription' => 'text'
                 ],
 
-                'requestDataKeys' => [
-                    'receiverKey' => 'receiver'
+                'getAccountInfo' => [
+                    'methodName' => 'get_account_info'
                 ]
             ];
         }
@@ -52,6 +54,11 @@
         protected function makeTextMessage($text, $message = null){
             $message['type'] = 'text';
             return parent::makeTextMessage($text, $message);
+        }
+
+        protected function makeImageMessage($image, $description = null, $message = null){
+            $message['type'] = 'picture';
+            return parent::makeImageMessage($image, $description, $message);
         }
 
         public function getAccountInfo(){
