@@ -1,31 +1,56 @@
 <?php
     include_once('MessengerBot.php');
     class ViberBot extends MessengerBot{
+        protected $TOKEN_HTTPHEADER;
         protected $name = null;
         protected $senderNameMaxLength = 28;
 
-        public function __construct($token, $api_url = 'https://chatapi.viber.com/pa'){
-            parent::__construct($token, $api_url);
-            $this->METHOD_PARAMETER_NAMES = [
-                'sendMessage' => [
-                    'methodName' => 'send_message',
-                    'receiver' => 'receiver',
-                    'image' => 'media',
-                    'imageDescription' => 'text'
-                ],
+        public function __construct($token, $apiUrl = 'https://chatapi.viber.com/pa'){
+            $this->API_URL = $apiUrl;
+            $this->TOKEN_HTTPHEADER = ['X-Viber-Auth-Token: ' . $token];
+        }
 
-                'getAccountInfo' => [
-                    'methodName' => 'get_account_info'
-                ]
+        protected function sendRequest($options){
+            $options[CURLOPT_HTTPHEADER] = $this->TOKEN_HTTPHEADER;
+            if(isset($options[CURLOPT_POSTFIELDS])){
+                $options[CURLOPT_POSTFIELDS] = json_encode($options[CURLOPT_POSTFIELDS]);
+            }
+            return parent::sendRequest($options);
+        }
+
+        public function sendText($receiver, $text){
+            $options[CURLOPT_URL] = $this->API_URL . '/send_message';
+            $options[CURLOPT_POSTFIELDS] = [
+                'receiver' => $receiver,
+                'type' => 'text',
+                'text' => $text
             ];
+            if(isset($this->name)){
+                $options[CURLOPT_POSTFIELDS]['sender']['name'] = $this->name;
+            }
+            $this->sendRequest($options);
+        }
+
+        public function sendImage($receiver, $image, $caption = null){
+            $options[CURLOPT_URL] = $this->API_URL . '/send_message';
+            $options[CURLOPT_POSTFIELDS] = [
+                'receiver' => $receiver,
+                'type' => 'picture',
+                'media' => $image
+            ];
+            if(isset($caption)){
+                $options[CURLOPT_POSTFIELDS]['text'] = $caption;
+            }
+            if(isset($this->name)){
+                $options[CURLOPT_POSTFIELDS]['sender']['name'] = $this->name;
+            }
+            $this->sendRequest($options);
         }
 
         public function setName($name){
             if($this->senderNameValidation($name)){
-                $this->name = $name;
+                return $this->name = $name;
             }
-            
-            return $this->name;
         }
 
         protected function senderNameValidation($name){
@@ -36,34 +61,9 @@
             return $this->name;
         }
 
-        public function sendRequest($method, $options = []){
-            $options[CURLOPT_HTTPHEADER] = ['X-Viber-Auth-Token: ' . $this->TOKEN];
-            if(isset($options[CURLOPT_POSTFIELDS])){
-                $options[CURLOPT_POSTFIELDS] = json_encode($options[CURLOPT_POSTFIELDS]);
-            }
-            return parent::sendRequest($method, $options);
-        }
-
-        protected function sendMessage($receiver, $message){
-            if($this->senderNameValidation($this->name)){
-                $message['sender']['name'] = $this->name;
-            }
-            parent::sendMessage($receiver, $message);
-        }
-
-        protected function makeTextMessage($text, $message = null){
-            $message['type'] = 'text';
-            return parent::makeTextMessage($text, $message);
-        }
-
-        protected function makeImageMessage($image, $description = null, $message = null){
-            $message['type'] = 'picture';
-            return parent::makeImageMessage($image, $description, $message);
-        }
-
         public function getAccountInfo(){
-            $method = $this->KEY_WORDS['methodNames']['getAccountInfo'];
-            return $this->sendRequest($method);
+            $options[CURLOPT_URL] = $this->API_URL . '/get_account_info';
+            return $this->sendRequest($options);
         }    
     }
 ?>

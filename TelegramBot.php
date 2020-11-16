@@ -1,25 +1,31 @@
 <?php
     include_once('MessengerBot.php');
     class TelegramBot extends MessengerBot{
-        public function __construct($token, $api_url = 'https://api.telegram.org'){
-            parent::__construct($token, $api_url);
-            $this->METHOD_PARAMETER_NAMES = [
-                'sendMessage' => [
-                    'methodName' => 'sendmessage',
-                    'receiver' => 'chat_id',
-                    'image' => 'photo',
-                    'imageDescription' => 'caption'
-                ]
-            ];
+        
+        public function __construct($token, $apiUrl = 'https://api.telegram.org'){
+            parent::__construct($token, $apiUrl);
+            $this->API_URL = $apiUrl . '/bot' . $token;
         }
 
-        protected function buildRequestUrl($method){
-            $url_pieces = [
-                $this->API_URL,
-                'bot' . $this->TOKEN,
-                $method
+        public function sendText($receiver, $text){
+            $options[CURLOPT_URL] = $this->API_URL . '/sendMessage';
+            $options[CURLOPT_POSTFIELDS] = [
+                'chat_id' => $receiver,
+                'text' => $text
             ];
-            return implode('/', $url_pieces);
+            $this->sendRequest($options);
+        }
+
+        public function sendImage($receiver, $image, $caption = null){
+            $options[CURLOPT_URL] = $this->API_URL . '/sendPhoto';
+            $options[CURLOPT_POSTFIELDS] = [
+                'chat_id' => $receiver,
+                'photo' => curl_file_create($image)
+            ];
+            if(isset($caption)){
+                $options[CURLOPT_POSTFIELDS]['caption'] = $caption;
+            }
+            $this->sendRequest($options);
         }
     }
 ?>
