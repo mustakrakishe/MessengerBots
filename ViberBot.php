@@ -28,7 +28,7 @@
             if(isset($this->name)){
                 $options[CURLOPT_POSTFIELDS]['sender']['name'] = $this->name;
             }
-            $this->sendRequest($options);
+            return $this->sendRequest($options);
         }
 
         public function sendImage($receiver, $image, $caption = null){
