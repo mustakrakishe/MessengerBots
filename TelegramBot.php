@@ -13,7 +13,7 @@
                 'chat_id' => $receiver,
                 'text' => $text
             ];
-            $this->sendRequest($options);
+            return $this->sendRequest($options);
         }
 
         public function sendImage($receiver, $image, $caption = null){
@@ -25,7 +25,7 @@
             if(isset($caption)){
                 $options[CURLOPT_POSTFIELDS]['caption'] = $caption;
             }
-            $this->sendRequest($options);
+            return $this->sendRequest($options);
         }
     }
 ?>
